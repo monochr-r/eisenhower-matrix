@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 
 class EisenMatrix:
 
@@ -29,10 +30,11 @@ class EisenMatrix:
         #Create text entry boxes
         self.text = 4*[[]]
         c = 0
+        bgcolors=["red", "green", "yellow", "grey"]
         for i in range(2):
             for j in range(2):
-                self.text[c] = Text(frame, width=40, height=15)
-                self.text[c].grid(column=i+1, row = j+1)
+                self.text[c] = Text(frame, background=bgcolors[c], width=40, height=15)
+                self.text[c].grid(column=i+1, row = j+1, sticky=(N, S, E, W))
                 c+=1
 
         #Add buttons
@@ -51,17 +53,26 @@ class EisenMatrix:
         frame.rowconfigure(2, weight=1)
 
     def open(self):
-        for i,obj in enumerate(self.text):
-            with open("save"+str(i), 'r') as f:
-                t = f.read()
-            obj.delete(1.0, END)
-            obj.insert(1.0, t)
+        if messagebox.askyesno("Load", "Delete entries and load save?"):
+            for i,obj in enumerate(self.text):
+                try:
+                    with open("save"+str(i), 'r') as f:
+                        t = f.read()
+                    obj.delete(1.0, END)
+                    obj.insert(1.0, t)
+                except:
+                    messagebox.showerror("Read Error", "Couldn't read save" + str(i) + ". Nothing read.")
+ 
 
     def save(self):
-        for i,obj in enumerate(self.text):
-            t = obj.get(1.0, END)
-            with open("save"+str(i), 'w') as f:
-                f.write(t.strip())
+        if messagebox.askyesno("Save", "Replace old save with entries?"):
+            for i,obj in enumerate(self.text):
+                t = obj.get(1.0, END)
+                try:
+                    with open("save"+str(i), 'w') as f:
+                        f.write(t.strip())
+                except:
+                    messagebox.showerror("Write Error", "Couldn't write save" + str(i) + ". Nothing saved.")
 
 if __name__ == '__main__':
     root = Tk()
