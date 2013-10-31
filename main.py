@@ -27,14 +27,24 @@ class EisenMatrix:
             topLabels[i] = ttk.Label(frame, text=label)
             topLabels[i].grid(column=(i+1), row=0)
 
-        #Create text entry boxes
+        #Create text entry boxes and scrollbars on them
+        textholders = 4*[[]]
+        scrollbars = 4*[[]]
         self.text = 4*[[]]
         c = 0
         bgcolors=["red", "green", "yellow", "grey"]
         for i in range(2):
             for j in range(2):
-                self.text[c] = Text(frame, background=bgcolors[c], width=40, height=15)
-                self.text[c].grid(column=i+1, row = j+1, sticky=(N, S, E, W))
+                textholders[c] = Frame(frame)
+                scrollbars[c] = Scrollbar(textholders[c])
+                scrollbars[c].grid(column=1,row=0, sticky=(N,S))
+                self.text[c] = Text(textholders[c], background=bgcolors[c], \
+                                        width=40, height=15, yscrollcommand=scrollbars[c].set)
+                self.text[c].grid(column=0,row=0,  sticky=(N, S, E, W))
+                scrollbars[c].config(command=self.text[c].yview)
+                textholders[c].grid(column=i+1, row = j+1, sticky=(N, S, E, W))
+                textholders[c].columnconfigure(0, weight=1)
+                textholders[c].rowconfigure(0, weight=1)
                 c+=1
 
         #Add buttons
