@@ -27,7 +27,7 @@ class EisenMatrix:
             topLabels[i] = ttk.Label(frame, text=label)
             topLabels[i].grid(column=(i+1), row=0)
 
-        #Create text entry boxes and scrollbars on them
+        #Create text entry boxes and scroll bars on them
         textholders = 4*[[]]
         scrollbars = 4*[[]]
         self.text = 4*[[]]
@@ -35,7 +35,7 @@ class EisenMatrix:
         bgcolors=["red", "green", "yellow", "grey"]
         for i in range(2):
             for j in range(2):
-                textholders[c] = Frame(frame)
+                textholders[c] = Frame(frame, borderwidth=3)
                 scrollbars[c] = Scrollbar(textholders[c])
                 scrollbars[c].grid(column=1,row=0, sticky=(N,S))
                 self.text[c] = Text(textholders[c], background=bgcolors[c], \
@@ -64,25 +64,29 @@ class EisenMatrix:
 
     def open(self):
         if messagebox.askyesno("Load", "Delete entries and load save?"):
-            for i,obj in enumerate(self.text):
-                try:
-                    with open("save"+str(i), 'r') as f:
-                        t = f.read()
-                    obj.delete(1.0, END)
-                    obj.insert(1.0, t)
-                except:
-                    messagebox.showerror("Read Error", "Couldn't read save" + str(i) + ". Nothing read.")
+            try:
+                with open("save", 'r') as f:
+                    ts = eval(f.read())
+            except:
+                messagebox.showerror("Read Error", "Couldn't read save"\
+                                         ". Nothing read.")
  
+            for i,obj in enumerate(self.text):
+                    obj.delete(1.0, END)
+                    obj.insert(1.0, ts[i])
 
     def save(self):
         if messagebox.askyesno("Save", "Replace old save with entries?"):
+            ts = []
             for i,obj in enumerate(self.text):
                 t = obj.get(1.0, END)
-                try:
-                    with open("save"+str(i), 'w') as f:
-                        f.write(t.strip())
-                except:
-                    messagebox.showerror("Write Error", "Couldn't write save" + str(i) + ". Nothing saved.")
+                ts.append(t.strip())
+            try:
+                with open("save", 'w') as f:
+                    f.write(str(ts))
+            except:
+                messagebox.showerror("Write Error", "Couldn't write to save."\
+                                         " Nothing saved.")
 
 if __name__ == '__main__':
     root = Tk()
